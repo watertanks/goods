@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+	<!-- id = 매소드명, resultType = 리턴, parameterType = 매개변수 -->
+<mapper namespace="com.goods.mapper.AdminMapper">
+ 
+	<select id="getAllMemberCnt" resultType="long">
+		SELECT count(*) 
+		FROM t_member_info 
+	</select>
+
+	<select id="getNewMemberCnt" resultType="long">
+		SELECT count(DATE_FORMAT(mi_joindate,'%m/%d/%Y')) 
+		FROM t_member_info 
+		WHERE mi_joindate 
+		BETWEEN NOW() - interval 30 day and now() 
+		ORDER BY mi_joindate DESC 
+	</select>
+
+
+</mapper>

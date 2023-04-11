@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+	<!-- id = 매소드명, resultType = 리턴, parameterType = 매개변수 -->
+<mapper namespace="com.goods.mapper.MemberMapper">
+	<sql id="memberInfoColumns">
+		mi_id,					<!-- PK -->
+		mi_pw,					<!-- NN -->
+		mi_name,				<!-- NN -->	
+		mi_nickname,			<!-- NN -->
+		mi_gender, 				<!-- NN -->
+		mi_birth, 				<!-- NN -->
+		mi_phone,				<!-- NN,UQ -->
+		mi_email, 				<!-- NN -->
+		mi_point,				<!-- default 1000 -->
+		mi_bmcount,				<!-- default 0 -->
+		mi_couponcount,			<!-- default 0 -->
+		mi_lastlogin,			<!-- default now() -->
+		mi_joindate,			<!-- default now() -->
+		mi_status,				<!-- default 'a' a는 정상회원/ b는 휴면회원/ c는 탈퇴회원-->
+		mi_kind					<!-- default 'a' a는 기본가입유저/ b는 kakaoLogin API 가입유저-->
+	</sql>
+	<sql id="memberAddrColumns">
+		mi_id,
+		ma_name,
+		ma_rname,
+		ma_phone,
+		ma_zip,
+		ma_addr1,
+		ma_addr2,
+		ma_basic,
+	</sql>
+	
+	<!-- 로그인 -->
+	<select id="loginProc" resultType="com.goods.vo.MemberInfo" parameterType="com.goods.vo.LoginInfo">
+		SELECT * 
+		FROM t_member_info 
+		WHERE mi_id = #{uid} and mi_pw = #{pw} 
+	</select>
+	
+	<!-- email 중복검사 -->
+	<select id="emailChk" resultType="_int" parameterType="string">
+		SELECT count(mi_email) 
+		FROM t_member_info 
+		WHERE mi_email = #{email} and mi_status != 'c' 
+	</select>
+	
+	<!-- kakaoJoin 카카오이메일 중복검사 후 가입된 회원이 없을경우 자동 회원가입 -->
+	<insert id="kakaoJoin" parameterType="com.goods.vo.MemberInfo">
+		INSERT INTO t_member_info 
+		(
+			mi_id,
+			mi_pw,
+			mi_name,
+			mi_nickname,
+			mi_gender,
+			mi_birth,
+			mi_phone,
+			mi_email,
+			mi_kind
+		) VALUES (
+			#{mi_email},
+			1234,
+			#{mi_nickname},
+			#{mi_nickname},
+			#{mi_gender},
+			#{mi_birth},
+			010-0000-0000,
+			#{mi_email},
+			#{mi_status}
+		)
+	</insert>
+	
+	<!-- kakaoJoin할때 t_member_point insert -->
+	<insert id="kakaoJoinPoint" parameterType="com.goods.vo.MemberPoint">
+		INSERT INTO t_member_point
+		(
+			mi_id,
+			mp_point,
+			mp_desc
+		) VALUES (
+			#{mi_id},
+			#{mp_point},
+			#{mp_desc}
+		)
+	</insert>
+	
+	
+	<!-- kakao 이메일로 회원가입이 되어 있는 경우 로그인처리 -->
+	<select id="kakaoLogin" resultType="com.goods.vo.MemberInfo" parameterType="string" >
+		SELECT * 
+		FROM t_member_info 
+		WHERE mi_email = #{email} and mi_status != 'c' 
+	</select>
+	
+	<!-- 회원가입시 닉네임 중복검사 -->
+	<select id="nickChk" resultType="_int" parameterType="string">
+		SELECT count(*) 
+		FROM t_member_info 
+		WHERE mi_nickname = #{unick} and mi_status != 'c' 
+	</select>
+	
+	<!-- 회원가입시 id 중복검사 -->
+	<select id="idChk" resultType="_int" parameterType="string">
+		SELECT count(*) 
+		FROM t_member_info 
+		WHERE mi_id = #{uid} and mi_status != 'c' 
+	</select>
+	
+	<!-- 회원가입시 email 중복검사 -->
+	<select id="emailChkJoin" resultType="_int" parameterType="string">
+		SELECT count(*) 
+		FROM t_member_info 
+		WHERE mi_email = #{email} and mi_status != 'c' 
+	</select>
+	
+	
+	
+
+	<insert id="memberIn" parameterType="com.goods.vo.MemberInfo">
+		INSERT INTO t_member_info 
+		(
+			mi_id,
+			mi_pw,
+			mi_name,
+			mi_nickname,
+			mi_gender,
+			mi_birth,
+			mi_phone,
+			mi_email
+		) VALUES (
+			#{mi_id},
+			#{mi_pw},
+			#{mi_name},
+			#{mi_nickname},
+			#{mi_gender},
+			#{mi_birth},
+			#{mi_phone},
+			#{mi_email}
+		)
+	</insert>
+	
+	<insert id="memberAddrIn" parameterType="com.goods.vo.MemberAddr">
+		INSERT INTO t_member_addr 
+		(
+			mi_id,
+			ma_name,
+			ma_rname,
+			ma_phone,
+			ma_zip,
+			ma_addr1,
+			ma_addr2
+		) VALUES(
+			#{mi_id},
+			#{ma_name},
+			#{ma_rname},
+			#{ma_phone},
+			#{ma_zip},
+			#{ma_addr1},
+			#{ma_addr2}
+		)
+	</insert>
+	
+	<insert id="memberPointIn" parameterType="com.goods.vo.MemberPoint">
+		INSERT INTO t_member_point
+		(
+			mi_id,
+			mp_point,
+			mp_desc
+		) VALUES (
+			#{mi_id},
+			#{mp_point},
+			#{mp_desc}
+		)
+	</insert>
+
+	
+</mapper>
+

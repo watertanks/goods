@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+	<!-- id = 매소드명, resultType = 리턴, parameterType = 매개변수 -->
+<mapper namespace="com.goods.mapper.ArtistMapper">
+ 
+<select id="getArtistList" resultType="com.goods.vo.ArtistCode" parameterType="com.goods.vo.Criteria">
+	SELECT * 
+	FROM t_artist_code 
+	ORDER BY ${orderby} 
+	LIMIT ${size} 
+	OFFSET ${skip} 
+</select>
+
+
+<select id="getAllArtistList" resultType="long" parameterType="String">
+	SELECT count(*) 
+	FROM t_artist_code 
+	<if test="ac != null or !ac.equals('')">
+		${ac}
+	</if>
+	
+</select>
+
+
+
+
+</mapper>

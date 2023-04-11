@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+	<!-- id = 매소드명, resultType = 리턴, parameterType = 매개변수 -->
+<mapper namespace="com.goods.mapper.ProductMapper">
+
+	<select id="getAllProductList" resultType="long" parameterType="String">
+		SELECT count(*) 
+		FROM t_product_info 
+		WHERE pi_isview = 'y'
+		<if test="pageset != null">
+			${pageset}
+		</if> 
+	</select>
+	
+	
+	<select id="getProductList" resultType="com.goods.vo.ProductInfo" parameterType="com.goods.vo.Criteria">
+	SELECT pi.pi_id, pi.pi_name, pi.pi_img1, pi.pi_dc, pi.pi_special, pi.pi_price, 
+			pi_isview, ac.ac_id, ac.ac_name_k, ac.ac_name_e, ap.ap_id, ap.ap_name 
+	FROM t_artist_code as ac join t_product_info as pi join t_artist_product as ap 
+	ON pi.ac_id = ac.ac_id and pi.ap_id = ap.ap_id 
+	${queryString} 
+	ORDER BY ${orderby} 
+	LIMIT ${size} 
+	OFFSET ${skip} 
+	</select>
+	
+	<select id="getArtistcodeList" resultType="com.goods.vo.ArtistCode">
+		SELECT * 
+		FROM t_artist_code 
+	</select>
+	
+	<select id="getArtistProduct" resultType="com.goods.vo.ArtistProduct">
+		SELECT * 
+		FROM t_artist_product 
+	</select>
+	
+	<select id="getProductInfo" resultType="com.goods.vo.ProductInfo" parameterType="String">
+		SELECT * 
+		FROM t_product_info 
+		WHERE pi_id = #{piid} 
+	</select>
+	
+	<select id="getProductStockList" resultType="com.goods.vo.ProductStock" parameterType="String">
+		SELECT * 
+		FROM t_product_stock
+		WHERE pi_id = #{piid}
+	</select>
+</mapper>
